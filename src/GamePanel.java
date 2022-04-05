@@ -2,6 +2,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JPanel;
 
@@ -18,13 +20,16 @@ public class GamePanel extends JPanel implements ActionListener {
 	int applesEaten;
 	int appleX;
 	int appleY;
+	int starX;
+	int starY;
 	char direction = 'R';
 	boolean running = false;
 	boolean invincible = false;
+	int delayStar;
 	Timer timer;
 	Random random;
     
-	
+
 	GamePanel(){
 		random = new Random();
 		this.setPreferredSize(new Dimension(screenWidth,screenHeight));
@@ -50,6 +55,10 @@ public class GamePanel extends JPanel implements ActionListener {
 		     g.setColor(Color.red);
 		     g.fillOval(appleX, appleY, unitSize, unitSize);
 		     drawEvolve(g);
+		     if(delayStar <= -50  && applesEaten > 8) {
+			     g.setColor(Color.yellow);
+			     g.fillOval(starX, starY, unitSize, unitSize);
+		     }
 		     g.setColor(Color.red);
 				g.setFont( new Font("Ink Free",Font.BOLD, 40));
 				FontMetrics metrics = getFontMetrics(g.getFont());
@@ -59,6 +68,7 @@ public class GamePanel extends JPanel implements ActionListener {
 	    	gameOver(g);
 	    }
 	}
+
 	
 	public void drawEvolve(Graphics g) {
 		if(invincible) {
@@ -77,7 +87,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		     }
 		}
 		else {
-			if(applesEaten <= 10) {
+			if(applesEaten % 2 == 0) {
 			     for(int i = 0; i< bodyParts;i++) {
 				     if(i == 0) {
 					      g.setColor(Color.green);
@@ -89,14 +99,14 @@ public class GamePanel extends JPanel implements ActionListener {
 				     }
 			     }
 			}
-			else if(applesEaten <= 20) {
+			else if(applesEaten % 5 == 0) {
 			     for(int i = 0; i< bodyParts;i++) {
 				     if(i == 0) {
 					      g.setColor(Color.yellow);
 					      g.fillRect(x[i],  y[i],  unitSize, unitSize);
 				     }
 				     else {
-					      g.setColor(Color.red);
+					      g.setColor(Color.gray);
 					      g.fillRect(x[i],  y[i],  unitSize, unitSize);
 				     }
 			     }
@@ -108,7 +118,7 @@ public class GamePanel extends JPanel implements ActionListener {
 					      g.fillRect(x[i],  y[i],  unitSize, unitSize);
 				     }
 				     else {
-					      g.setColor(Color.magenta);
+					      g.setColor(Color.red);
 					      g.fillRect(x[i],  y[i],  unitSize, unitSize);
 				     }
 			     }
@@ -121,6 +131,12 @@ public class GamePanel extends JPanel implements ActionListener {
 		appleX = random.nextInt((int)(screenWidth/unitSize))*unitSize;
 		appleY = random.nextInt((int)(screenHeight/unitSize))*unitSize;
 	}
+	
+	public void newStar() {
+	 	starX = random.nextInt((int)(screenWidth/unitSize))*unitSize;
+		starY = random.nextInt((int)(screenHeight/unitSize))*unitSize;
+	}
+	
 	public void move() {
 		for(int i = bodyParts;i>0;i--) {
 			x[i] = x[i-1];
@@ -151,10 +167,26 @@ public class GamePanel extends JPanel implements ActionListener {
 		}
 	}
 	
+	public void checkStar() {
+		if((x[0] == starX) && (y[0] == starY)) {
+			delayStar = 25;
+			invincible = true;
+		}
+		else {
+			delayStar--;
+			if(delayStar == 0) {
+				invincible = false;
+			}
+			else if(delayStar == -30 && applesEaten == 8) {
+				newStar();
+			}
+		}
+	}
+	
 	public void speedUp() {
 		if(delay > 50) {
 			timer.stop();
-			delay = delay - 10;
+			delay = delay - 5;
 			timer = new Timer (delay,this);
 			timer.restart();
 		}
@@ -162,28 +194,37 @@ public class GamePanel extends JPanel implements ActionListener {
 	
 	public void checkCollisions() {
 		//checks if head collides with body
-		for(int i = bodyParts;i>0;i--) {
-			if((x[0] == x[i]&& (y[0] == y[i]))){
-				running = false;
+		if(invincible) {
+			for(int i = bodyParts;i>0;i--) {
+				if((x[0] == x[i]&& (y[0] == y[i]))){
+					running = true;
+				}
 			}
 		}
-		//check if head touches left boreder
-		if(x[0] < 0) {
-			running = false;
+		else if(!invincible) {
+			for(int i = bodyParts;i>0;i--) {
+				if((x[0] == x[i]&& (y[0] == y[i]))){
+					running = false;
+				}
+			}
 		}
-		//check if head touches right border
-		if(x[0] > screenWidth) {
-			running = false;
-		}	
-		//check if head touches top border
-		if(y[0] < 0) {
-			running = false;
-		}
-		//check if head touches bottom border
-		if(y[0] > screenHeight) {
-			running = false;
-		}
-		
+			//check if head touches left boreder
+			if(x[0] < 0) {
+				running = false;
+			}
+			//check if head touches right border
+			if(x[0] > screenWidth) {
+				running = false;
+			}	
+			//check if head touches top border
+			if(y[0] < 0) {
+				running = false;
+			}
+			//check if head touches bottom border
+			if(y[0] > screenHeight) {
+				running = false;
+			}
+
 		if(!running) {
 			timer.stop();
 		}
@@ -207,7 +248,9 @@ public class GamePanel extends JPanel implements ActionListener {
 		if(running) {
 			move();
 			checkApple();
+			checkStar();
 			checkCollisions();
+			System.out.println(delayStar);
 		}
 		repaint();
 	}
