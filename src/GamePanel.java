@@ -59,10 +59,12 @@ public class GamePanel extends JPanel implements ActionListener {
 			     g.setColor(Color.yellow);
 			     g.fillOval(starX, starY, unitSize, unitSize);
 		     }
-		     g.setColor(Color.red);
-				g.setFont( new Font("Ink Free",Font.BOLD, 40));
-				FontMetrics metrics = getFontMetrics(g.getFont());
-				g.drawString("Score: "+applesEaten, (screenWidth - metrics.stringWidth("Score: "+applesEaten))/2, g.getFont().getSize());
+		    g.setColor(Color.red);
+			g.setFont( new Font("Ink Free",Font.BOLD, 40));
+			FontMetrics metrics = getFontMetrics(g.getFont());
+			g.drawString("Score: "+applesEaten, 
+					(screenWidth - metrics.stringWidth("Score: "+applesEaten))/2,
+					g.getFont().getSize());
 	    }
 	    else {
 	    	gameOver(g);
@@ -177,7 +179,7 @@ public class GamePanel extends JPanel implements ActionListener {
 			if(delayStar == 0) {
 				invincible = false;
 			}
-			else if(delayStar == -30 && applesEaten == 8) {
+			else if(delayStar == -30 && applesEaten >= 8) {
 				newStar();
 			}
 		}
@@ -250,7 +252,6 @@ public class GamePanel extends JPanel implements ActionListener {
 			checkApple();
 			checkStar();
 			checkCollisions();
-			System.out.println(delayStar);
 		}
 		repaint();
 	}
