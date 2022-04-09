@@ -9,17 +9,20 @@ import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements ActionListener {
 
-	static final int screenWidth = 600;
-	static final int screenHeight = 600;
-	static final int unitSize = 25;
-	static final int unitGame = (screenWidth*screenHeight)/unitSize;
+//	final int screenWidth = 600;
+//	final int screenHeight = 600;
+//	final int unitSize = 25;
+//	final int unitGame = (screenWidth*screenHeight)/unitSize;
+	Map map;
 	static int delay = 150;
-	final int x[] = new int[unitGame];
-	final int y[] = new int[unitGame];
-	int bodyParts = 6;
-	int applesEaten;
-	int appleX;
-	int appleY;
+//	final int x[] = new int[unitGame];
+//	final int y[] = new int[unitGame];
+//	int bodyParts = 6;
+	Snake snake;
+//	int applesEaten;
+//	int appleX;
+//	int appleY;
+	Apple apple;
 	int starX;
 	int starY;
 	char direction = 'R';
@@ -32,14 +35,17 @@ public class GamePanel extends JPanel implements ActionListener {
 
 	GamePanel(){
 		random = new Random();
-		this.setPreferredSize(new Dimension(screenWidth,screenHeight));
+		map = new Map();
+		this.setPreferredSize(new Dimension(map.getScreenWidth(),map.getScreenHeight()));
 		this.setBackground(Color.black);
 		this.setFocusable(true);
 		this.addKeyListener(new MyKeyAdapter());
 		startGame();
 	}
 	public void startGame() {
-		newApple();
+		snake = new Snake(new int[map.getUnitGame()], new int[map.getUnitGame()]);
+		apple = new Apple(map);
+//		newApple();
 		running = true;
 		timer = new Timer (delay,this);
 		timer.start();
@@ -53,17 +59,17 @@ public class GamePanel extends JPanel implements ActionListener {
 	public void draw(Graphics g) {
 	    if(running) {
 		     g.setColor(Color.red);
-		     g.fillOval(appleX, appleY, unitSize, unitSize);
+		     g.fillOval(apple.getAppleX(), apple.getAppleY(), map.getUnitSize(), map.getUnitSize());
 		     drawEvolve(g);
-		     if(delayStar <= -50  && applesEaten > 8) {
+		     if(delayStar <= -50  && apple.getApplesEaten() > 8) {
 			     g.setColor(Color.yellow);
-			     g.fillOval(starX, starY, unitSize, unitSize);
+			     g.fillOval(starX, starY, map.getUnitSize(), map.getUnitSize());
 		     }
 		    g.setColor(Color.red);
 			g.setFont( new Font("Ink Free",Font.BOLD, 40));
 			FontMetrics metrics = getFontMetrics(g.getFont());
-			g.drawString("Score: "+applesEaten, 
-					(screenWidth - metrics.stringWidth("Score: "+applesEaten))/2,
+			g.drawString("Score: "+apple.getApplesEaten(), 
+					(map.getScreenWidth() - metrics.stringWidth("Score: "+apple.getApplesEaten()))/2,
 					g.getFont().getSize());
 	    }
 	    else {
@@ -71,57 +77,56 @@ public class GamePanel extends JPanel implements ActionListener {
 	    }
 	}
 
-	
 	public void drawEvolve(Graphics g) {
 		if(invincible) {
 			float R = random.nextFloat();
 			float G = random.nextFloat();
 			float B = random.nextFloat();
-		     for(int i = 0; i< bodyParts;i++) {
+		     for(int i = 0; i< snake.getBodyParts();i++) {
 			     if(i == 0) {
 				      g.setColor(new Color(R, G, B));
-				      g.fillRect(x[i],  y[i],  unitSize, unitSize);
+				      g.fillRect(snake.getX()[i],  snake.getY()[i],  map.getUnitSize(), map.getUnitSize());
 			     }
 			     else {
 				      g.setColor(new Color(R, G, B));
-				      g.fillRect(x[i],  y[i],  unitSize, unitSize);
+				      g.fillRect(snake.getX()[i],  snake.getY()[i],  map.getUnitSize(), map.getUnitSize());
 			     }
 		     }
 		}
 		else {
-			if(applesEaten % 2 == 0) {
-			     for(int i = 0; i< bodyParts;i++) {
+			if(apple.getApplesEaten() % 2 == 0) {
+			     for(int i = 0; i< snake.getBodyParts();i++) {
 				     if(i == 0) {
 					      g.setColor(Color.green);
-					      g.fillRect(x[i],  y[i],  unitSize, unitSize);
+					      g.fillRect(snake.getX()[i],  snake.getY()[i],  map.getUnitSize(), map.getUnitSize());
 				     }
 				     else {
 					      g.setColor(Color.magenta);
-					      g.fillRect(x[i],  y[i],  unitSize, unitSize);
+					      g.fillRect(snake.getX()[i],  snake.getY()[i],  map.getUnitSize(), map.getUnitSize());
 				     }
 			     }
 			}
-			else if(applesEaten % 5 == 0) {
-			     for(int i = 0; i< bodyParts;i++) {
+			else if(apple.getApplesEaten() % 5 == 0) {
+			     for(int i = 0; i< snake.getBodyParts();i++) {
 				     if(i == 0) {
 					      g.setColor(Color.yellow);
-					      g.fillRect(x[i],  y[i],  unitSize, unitSize);
+					      g.fillRect(snake.getX()[i],  snake.getY()[i],  map.getUnitSize(), map.getUnitSize());
 				     }
 				     else {
 					      g.setColor(Color.gray);
-					      g.fillRect(x[i],  y[i],  unitSize, unitSize);
+					      g.fillRect(snake.getX()[i],  snake.getY()[i],  map.getUnitSize(), map.getUnitSize());
 				     }
 			     }
 			}
 			else {
-			     for(int i = 0; i< bodyParts;i++) {
+			     for(int i = 0; i< snake.getBodyParts();i++) {
 				     if(i == 0) {
 					      g.setColor(Color.cyan);
-					      g.fillRect(x[i],  y[i],  unitSize, unitSize);
+					      g.fillRect(snake.getX()[i],  snake.getY()[i],  map.getUnitSize(), map.getUnitSize());
 				     }
 				     else {
 					      g.setColor(Color.red);
-					      g.fillRect(x[i],  y[i],  unitSize, unitSize);
+					      g.fillRect(snake.getX()[i],  snake.getY()[i],  map.getUnitSize(), map.getUnitSize());
 				     }
 			     }
 			}
@@ -129,48 +134,48 @@ public class GamePanel extends JPanel implements ActionListener {
 
 	}
 	
-	public void newApple() {
-		appleX = random.nextInt((int)(screenWidth/unitSize))*unitSize;
-		appleY = random.nextInt((int)(screenHeight/unitSize))*unitSize;
-	}
+//	public void newApple() {
+//		appleX = random.nextInt((int)(screenWidth/unitSize))*unitSize;
+//		appleY = random.nextInt((int)(screenHeight/unitSize))*unitSize;
+//	}
 	
 	public void newStar() {
-	 	starX = random.nextInt((int)(screenWidth/unitSize))*unitSize;
-		starY = random.nextInt((int)(screenHeight/unitSize))*unitSize;
+	 	starX = random.nextInt((int)(map.getScreenWidth()/map.getUnitSize()))*map.getUnitSize();
+		starY = random.nextInt((int)(map.getScreenHeight()/map.getUnitSize()))*map.getUnitSize();
 	}
 	
 	public void move() {
-		for(int i = bodyParts;i>0;i--) {
-			x[i] = x[i-1];
-			y[i] = y[i-1];
+		for(int i = snake.getBodyParts();i>0;i--) {
+			snake.getX()[i] = snake.getX()[i-1];
+			snake.getY()[i] = snake.getY()[i-1];
 		}
 		
 		switch(direction) {
 		case 'U':
-			y[0] = y[0] - unitSize;
+			snake.getY()[0] = snake.getY()[0] - map.getUnitSize();
 			break;
 		case 'D':
-			y[0] = y[0] + unitSize;
+			snake.getY()[0] = snake.getY()[0] + map.getUnitSize();
 			break;
 		case 'L':
-			x[0] = x[0] - unitSize;
+			snake.getX()[0] = snake.getX()[0] - map.getUnitSize();
 			break;
 		case 'R':
-			x[0] = x[0] + unitSize;
+			snake.getX()[0] = snake.getX()[0] + map.getUnitSize();
 			break;	
 		}
 	}
 	public void checkApple() {
-		if((x[0] == appleX) && (y[0] == appleY)) {
-			bodyParts++;
-			applesEaten++;
-			newApple();
+		if((snake.getX()[0] == apple.getAppleX()) && (snake.getY()[0] == apple.getAppleY())) {
+			snake.upBodyParts();
+			apple.upApplesEaten();
+			apple.setNewAppleXY(map);
 			speedUp();
 		}
 	}
 	
 	public void checkStar() {
-		if((x[0] == starX) && (y[0] == starY)) {
+		if((snake.getX()[0] == starX) && (snake.getY()[0] == starY)) {
 			delayStar = 25;
 			invincible = true;
 		}
@@ -179,7 +184,7 @@ public class GamePanel extends JPanel implements ActionListener {
 			if(delayStar == 0) {
 				invincible = false;
 			}
-			else if(delayStar == -30 && applesEaten >= 8) {
+			else if(delayStar == -30 && apple.getApplesEaten() >= 8) {
 				newStar();
 			}
 		}
@@ -197,33 +202,33 @@ public class GamePanel extends JPanel implements ActionListener {
 	public void checkCollisions() {
 		//checks if head collides with body
 		if(invincible) {
-			for(int i = bodyParts;i>0;i--) {
-				if((x[0] == x[i]&& (y[0] == y[i]))){
+			for(int i = snake.getBodyParts();i>0;i--) {
+				if((snake.getX()[0] == snake.getX()[i]&& (snake.getY()[0] == snake.getY()[i]))){
 					running = true;
 				}
 			}
 		}
 		else if(!invincible) {
-			for(int i = bodyParts;i>0;i--) {
-				if((x[0] == x[i]&& (y[0] == y[i]))){
+			for(int i = snake.getBodyParts();i>0;i--) {
+				if((snake.getX()[0] == snake.getX()[i]&& (snake.getY()[0] == snake.getY()[i]))){
 					running = false;
 				}
 			}
 		}
 			//check if head touches left boreder
-			if(x[0] < 0) {
+			if(snake.getX()[0] < 0) {
 				running = false;
 			}
 			//check if head touches right border
-			if(x[0] > screenWidth) {
+			if(snake.getX()[0] > map.getScreenWidth()) {
 				running = false;
 			}	
 			//check if head touches top border
-			if(y[0] < 0) {
+			if(snake.getY()[0] < 0) {
 				running = false;
 			}
 			//check if head touches bottom border
-			if(y[0] > screenHeight) {
+			if(snake.getY()[0] > map.getScreenHeight()) {
 				running = false;
 			}
 
@@ -236,12 +241,12 @@ public class GamePanel extends JPanel implements ActionListener {
 		g.setColor(Color.green);
 		g.setFont( new Font("Ink Free",Font.BOLD, 40));
 		FontMetrics metrics1 = getFontMetrics(g.getFont());
-		g.drawString("Score: "+applesEaten, (screenWidth - metrics1.stringWidth("Score: "+applesEaten))/2, g.getFont().getSize());
+		g.drawString("Score: "+apple.getApplesEaten(), (map.getScreenWidth() - metrics1.stringWidth("Score: "+ apple.getApplesEaten()))/2, g.getFont().getSize());
 		//Game Over text
 		g.setColor(Color.blue);
 		g.setFont( new Font("Ink Free",Font.BOLD, 75));
 		FontMetrics metrics2 = getFontMetrics(g.getFont());
-		g.drawString("Game Over", (screenWidth - metrics2.stringWidth("Game Over"))/2, screenHeight/2);
+		g.drawString("Game Over", (map.getScreenWidth() - metrics2.stringWidth("Game Over"))/2, map.getScreenHeight()/2);
 	}
 	
 	@Override
