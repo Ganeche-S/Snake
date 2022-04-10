@@ -8,8 +8,8 @@ public class Star {
 	private Random random = new Random();
 	
 	public Star(Map map) {
-		this.starX = random.nextInt((int)(map.getScreenWidth()/map.getUnitSize()))*map.getUnitSize();
-		this.starY = random.nextInt((int)(map.getScreenHeight()/map.getUnitSize()))*map.getUnitSize();
+		this.starX = -1;
+		this.starY = -1;
 	}
 
 	public void resetDelayStar() {
