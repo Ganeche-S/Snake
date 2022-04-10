@@ -236,7 +236,6 @@ public class GamePanel extends JPanel implements ActionListener {
 			if(this.snake.getApplesEaten() == 7) {
 				this.star.setNewStarXY(map);
 			}
-			System.out.println(this.star.getDelayStar());
 			checkStar();
 			checkCollisions();
 		}
