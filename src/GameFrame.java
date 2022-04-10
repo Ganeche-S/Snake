@@ -1,9 +1,12 @@
 import javax.swing.JFrame;
 
+// Classe avec JFrame pour gérer l'interface
+
 public class GameFrame extends JFrame{
 	
 	GameFrame(){
 		
+		// Instanciation de l'interface
 		this.add(new GamePanel());
 		this.setTitle("Snake");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

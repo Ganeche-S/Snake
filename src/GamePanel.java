@@ -7,8 +7,11 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.JPanel;
 
+// Classe pour l'environnement du jeu
+
 public class GamePanel extends JPanel implements ActionListener {
 
+	// Variables
 	private Map map;
 	private Snake snake;
 	private Apple apple;
@@ -19,6 +22,7 @@ public class GamePanel extends JPanel implements ActionListener {
 	private Timer timer;
 	private Random random;
     
+	// Constructeur
 	GamePanel(){
 		this.random = new Random();
 		this.map = new Map();
@@ -28,22 +32,26 @@ public class GamePanel extends JPanel implements ActionListener {
 		this.addKeyListener(new MyKeyAdapter());
 		startGame();
 	}
+	
+	// Fonction qui permet de construire l'environnement du jeu
 	public void startGame() {
 		this.snake = new Snake(new int[this.map.getUnitGame()], new int[this.map.getUnitGame()]);
 		this.apple = new Apple(this.map);
 		this.star = new Star(this.map);
 		this.running = true;
-		this.delay = 150;
 		this.direction = 'R';
+		this.delay = 150;
 		this.timer = new Timer (this.delay,this);
 		this.timer.start();
 	}
 	
-
+	// Fonction qui permet de dessiner la fenêtre
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		draw(g);
 	}
+	
+	// Fonction qui dessine le jeu et son contenu
 	public void draw(Graphics g) {
 	    if(running) {
 		     g.setColor(Color.red);
@@ -65,6 +73,7 @@ public class GamePanel extends JPanel implements ActionListener {
 	    }
 	}
 
+	// Fonction qui permet le changement de couleur du serpent
 	public void drawEvolve(Graphics g) {
 		if(this.snake.isInvincible()) {
 			float R = random.nextFloat();
@@ -122,6 +131,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
 	}
 	
+	// Fonction qui permet de déplacer le serpent
 	public void move() {
 		for(int i = this.snake.getBodyParts();i>0;i--) {
 			this.snake.getX()[i] = this.snake.getX()[i-1];
@@ -143,6 +153,8 @@ public class GamePanel extends JPanel implements ActionListener {
 			break;	
 		}
 	}
+	
+	// Fonction pour la gestion du serpent et de la pomme lorsque celle-ci est mangé
 	public void checkApple() {
 		if((this.snake.getX()[0] == this.apple.getAppleX()) && (snake.getY()[0] == this.apple.getAppleY())) {
 			this.snake.upBodyParts();
@@ -152,6 +164,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		}
 	}
 	
+	// Fonction qui la gestion du serpent et de l'étoile lorsque celle-ci est mangé avec le temps d'invincibilité
 	public void checkStar() {
 		if((this.snake.getX()[0] == this.star.getStarX()) && (this.snake.getY()[0] == this.star.getStarY())) {
 			this.star.resetDelayStar();
@@ -168,6 +181,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		}
 	}
 	
+	// Fonction qui augmente la vélocité du serpent
 	public void speedUp() {
 		if(this.delay > 50) {
 			this.timer.stop();
@@ -177,6 +191,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		}
 	}
 	
+	// Fonction qui gére la collision entre le serpent, les limites de la map ainsi que lui-même
 	public void checkCollisions() {
 		//checks if head collides with body
 		if(this.snake.isInvincible()) {
@@ -193,19 +208,15 @@ public class GamePanel extends JPanel implements ActionListener {
 				}
 			}
 		}
-			//check if head touches left boreder
 			if(this.snake.getX()[0] < 0) {
 				this.running = false;
 			}
-			//check if head touches right border
 			if(this.snake.getX()[0] > map.getScreenWidth()) {
 				this.running = false;
 			}	
-			//check if head touches top border
 			if(this.snake.getY()[0] < 0) {
 				this.running = false;
 			}
-			//check if head touches bottom border
 			if(this.snake.getY()[0] > map.getScreenHeight()) {
 				this.running = false;
 			}
@@ -214,19 +225,20 @@ public class GamePanel extends JPanel implements ActionListener {
 			this.timer.stop();
 		}
 	}
+	
+	// Fonction qui affiche l'écran de fin de partie avec le score
 	public void gameOver(Graphics g) {
-		//Score
 		g.setColor(Color.green);
 		g.setFont( new Font("Ink Free",Font.BOLD, 40));
 		FontMetrics metrics1 = getFontMetrics(g.getFont());
 		g.drawString("Score: "+this.apple.getApplesEaten(), (map.getScreenWidth() - metrics1.stringWidth("Score: "+ this.apple.getApplesEaten()))/2, g.getFont().getSize());
-		//Game Over text
 		g.setColor(Color.blue);
 		g.setFont( new Font("Ink Free",Font.BOLD, 75));
 		FontMetrics metrics2 = getFontMetrics(g.getFont());
 		g.drawString("Game Over", (map.getScreenWidth() - metrics2.stringWidth("Game Over"))/2, map.getScreenHeight()/2);
 	}
 	
+	// Fonction qui démarre le jeu
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
@@ -242,7 +254,10 @@ public class GamePanel extends JPanel implements ActionListener {
 		repaint();
 	}
 	
+	// Classe pour gérer la direction du serpent
 	public class MyKeyAdapter extends KeyAdapter{
+		
+		// Fonction qui attribue des touches du clavier aux directions possibles du serpent
 		@Override
 		public void keyPressed(KeyEvent e) {
 			switch(e.getKeyCode()) {
