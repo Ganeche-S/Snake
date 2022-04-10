@@ -1,14 +1,16 @@
 
 public class Snake {
 	
-	final int x[];
-	final int y[];
-	int bodyParts;
-	
+	private int x[];
+	private int y[];
+	private int bodyParts;
+	private boolean invincible;
+
 	public Snake(int x[], int y[]) {
 		this.x = x;
 		this.y = y;
 		this.bodyParts = 6;
+		this.invincible = false;
 	}
 
 	public int getBodyParts() {
@@ -20,11 +22,19 @@ public class Snake {
 	}
 
 	public int[] getX() {
-		return x;
+		return this.x;
 	}
 
 	public int[] getY() {
-		return y;
+		return this.y;
+	}
+	
+	public boolean isInvincible() {
+		return this.invincible;
+	}
+
+	public void setInvincible(boolean invincible) {
+		this.invincible = invincible;
 	}
 	
 	

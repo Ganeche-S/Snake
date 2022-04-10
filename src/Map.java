@@ -1,10 +1,10 @@
 
 public class Map {
 	
-	final int screenWidth;
-	final int screenHeight;
-	final int unitSize;
-	final int unitGame; 
+	private int screenWidth;
+	private int screenHeight;
+	private int unitSize;
+	private int unitGame; 
 	
 	public Map() {
 		this.screenHeight = 600;
