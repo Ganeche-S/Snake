@@ -19,9 +19,5 @@ public class Apple {
 	public int getAppleY() {
 		return appleY;
 	}
-	
-//	public void setNewAppleXY(Map map) {
-//		this.appleX = random.nextInt((int)(map.getScreenWidth()/map.getUnitSize()))*map.getUnitSize();
-//		this.appleY = random.nextInt((int)(map.getScreenHeight()/map.getUnitSize()))*map.getUnitSize();
-//	}
+
 }
