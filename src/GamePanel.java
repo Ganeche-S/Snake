@@ -49,15 +49,15 @@ public class GamePanel extends JPanel implements ActionListener {
 		     g.setColor(Color.red);
 		     g.fillOval(this.apple.getAppleX(), this.apple.getAppleY(), this.map.getUnitSize(), this.map.getUnitSize());
 		     drawEvolve(g);
-		     if(this.star.getDelayStar() <= -30  && this.snake.getApplesEaten() >= 8) {
+		     if(this.star.getDelayStar() <= -30  && this.apple.getApplesEaten() >= 8) {
 			     g.setColor(Color.yellow);
 			     g.fillOval(this.star.getStarX(), this.star.getStarY(), this.map.getUnitSize(), this.map.getUnitSize());
 		     }
 		    g.setColor(Color.red);
 			g.setFont( new Font("Ink Free",Font.BOLD, 40));
 			FontMetrics metrics = getFontMetrics(g.getFont());
-			g.drawString("Score: "+this.snake.getApplesEaten(), 
-					(map.getScreenWidth() - metrics.stringWidth("Score: "+this.snake.getApplesEaten()))/2,
+			g.drawString("Score: "+this.apple.getApplesEaten(), 
+					(map.getScreenWidth() - metrics.stringWidth("Score: "+this.apple.getApplesEaten()))/2,
 					g.getFont().getSize());
 	    }
 	    else {
@@ -82,7 +82,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		     }
 		}
 		else {
-			if(this.snake.getApplesEaten() % 2 == 0) {
+			if(this.apple.getApplesEaten() % 2 == 0) {
 			     for(int i = 0; i< this.snake.getBodyParts();i++) {
 				     if(i == 0) {
 					      g.setColor(Color.green);
@@ -94,7 +94,7 @@ public class GamePanel extends JPanel implements ActionListener {
 				     }
 			     }
 			}
-			else if(this.snake.getApplesEaten() % 5 == 0) {
+			else if(this.apple.getApplesEaten() % 5 == 0) {
 			     for(int i = 0; i< this.snake.getBodyParts();i++) {
 				     if(i == 0) {
 					      g.setColor(Color.yellow);
@@ -146,8 +146,8 @@ public class GamePanel extends JPanel implements ActionListener {
 	public void checkApple() {
 		if((this.snake.getX()[0] == this.apple.getAppleX()) && (snake.getY()[0] == this.apple.getAppleY())) {
 			this.snake.upBodyParts();
-			this.snake.upApplesEaten();
-			this.apple = new Apple(map);
+			this.apple.upApplesEaten();
+			this.apple.setNewAppleXY(map);
 			speedUp();
 		}
 	}
@@ -162,7 +162,7 @@ public class GamePanel extends JPanel implements ActionListener {
 			if(this.star.getDelayStar() == 0) {
 				this.snake.setInvincible(false);
 			}
-			else if(this.star.getDelayStar() == -30 && this.snake.getApplesEaten() >= 8 ) {
+			else if(this.star.getDelayStar() == -30 && this.apple.getApplesEaten() >= 8 ) {
 				this.star.setNewStarXY(map);
 			}
 		}
@@ -219,7 +219,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		g.setColor(Color.green);
 		g.setFont( new Font("Ink Free",Font.BOLD, 40));
 		FontMetrics metrics1 = getFontMetrics(g.getFont());
-		g.drawString("Score: "+this.snake.getApplesEaten(), (map.getScreenWidth() - metrics1.stringWidth("Score: "+ this.snake.getApplesEaten()))/2, g.getFont().getSize());
+		g.drawString("Score: "+this.apple.getApplesEaten(), (map.getScreenWidth() - metrics1.stringWidth("Score: "+ this.apple.getApplesEaten()))/2, g.getFont().getSize());
 		//Game Over text
 		g.setColor(Color.blue);
 		g.setFont( new Font("Ink Free",Font.BOLD, 75));
@@ -233,7 +233,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		if(this.running) {
 			move();
 			checkApple();
-			if(this.snake.getApplesEaten() == 7) {
+			if(this.apple.getApplesEaten() == 7) {
 				this.star.setNewStarXY(map);
 			}
 			checkStar();
